@@ -1,4 +1,4 @@
-import { fabric } from "fabric";
+import { Canvas } from 'fabric'
 import { v4 as uuid4 } from "uuid";
 
 import {
@@ -19,14 +19,14 @@ export const initializeFabric = ({
   fabricRef,
   canvasRef,
 }: {
-  fabricRef: React.MutableRefObject<fabric.Canvas | null>;
+  fabricRef: React.MutableRefObject<Canvas | null>;
   canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
 }) => {
   // get canvas element
   const canvasElement = document.getElementById("canvas");
-
+  //console.log("CANVAS ELEMENT", canvasElement)
   // create fabric canvas
-  const canvas = new fabric.Canvas(canvasRef.current, {
+  const canvas = new Canvas(canvasRef.current, {
     width: canvasElement?.clientWidth,
     height: canvasElement?.clientHeight,
   });
@@ -35,6 +35,7 @@ export const initializeFabric = ({
   fabricRef.current = canvas;
 
   return canvas;
+
 };
 
 // instantiate creation of custom fabric object/shape and add it to canvas
@@ -45,8 +46,15 @@ export const handleCanvasMouseDown = ({
   isDrawing,
   shapeRef,
 }: CanvasMouseDown) => {
+  
   // get pointer coordinates
-  const pointer = canvas.getPointer(options.e);
+ 
+  console.log(canvas)
+  const pointer = {
+    x: options.e.clientX,
+    y: options.e.clientY,
+  }
+ 
 
   /**
    * get target object i.e., the object that is clicked
@@ -99,7 +107,9 @@ export const handleCanvasMouseDown = ({
       // add: http://fabricjs.com/docs/fabric.Canvas.html#add
       canvas.add(shapeRef.current);
     }
+      
   }
+    
 };
 
 // handle mouse move event on canvas to draw shapes with different dimensions
@@ -118,8 +128,10 @@ export const handleCanvaseMouseMove = ({
   canvas.isDrawingMode = false;
 
   // get pointer coordinates
-  const pointer = canvas.getPointer(options.e);
-
+  const pointer = {
+    x: options.e.clientX,
+    y: options.e.clientY,
+  }
   // depending on the selected shape, set the dimensions of the shape stored in shapeRef in previous step of handelCanvasMouseDown
   // calculate shape dimensions based on pointer coordinates
   switch (selectedShapeRef?.current) {

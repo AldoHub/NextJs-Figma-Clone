@@ -1,3 +1,5 @@
+"use client";
+
 import LiveCursors from "./cursor/LiveCursors";
 import { useOthers, useMyPresence } from "@/liveblocks.config";
 import { useCallback, useState, useEffect } from "react";
@@ -9,7 +11,12 @@ import useInterval from "@/hooks/useInterval";
 import { useBroadcastEvent, useEventListener } from "@liveblocks/react";
 
 
-const Live = () => {
+type Props = {
+  canvasRef: React.MutableRefObject<HTMLCanvasElement | null>;
+}
+
+
+const Live = ({canvasRef}: {canvasRef: Props}) => {
   const others = useOthers();
   const [{cursor}, updateMyPresence] = useMyPresence() as any;
 
@@ -136,11 +143,14 @@ const Live = () => {
         window.removeEventListener("keyup", onKeyUp);
         window.removeEventListener("keydown", onKeyDown);
     };
+
+
   }, [updateMyPresence]);
 
 
   return (
     <div 
+    id="canvas"
     onPointerMove={handlePointerMove}
     onPointerLeave={handlePointerLeave}
     onPointerDown={handlePointerDown}
@@ -148,7 +158,7 @@ const Live = () => {
     className="flex h-[100vh] w-full items-center justify-center">
       
     
-      <h1 className="text-5xl font-bold font-sans">Hello world</h1>
+      <canvas ref={canvasRef}></canvas>
      
       {reactions.map((reaction) => 
         <FlyingReaction

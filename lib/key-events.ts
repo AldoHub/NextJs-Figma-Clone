@@ -1,9 +1,9 @@
-import { fabric } from "fabric";
+import { Canvas, Object } from "fabric";
 import { v4 as uuidv4 } from "uuid";
 
 import { CustomFabricObject } from "@/types/type";
 
-export const handleCopy = (canvas: fabric.Canvas) => {
+export const handleCopy = (canvas: Canvas) => {
   const activeObjects = canvas.getActiveObjects();
   if (activeObjects.length > 0) {
     // Serialize the selected objects
@@ -16,10 +16,10 @@ export const handleCopy = (canvas: fabric.Canvas) => {
 };
 
 export const handlePaste = (
-  canvas: fabric.Canvas,
-  syncShapeInStorage: (shape: fabric.Object) => void
+  canvas: Canvas,
+  syncShapeInStorage: (shape: Object) => void
 ) => {
-  if (!canvas || !(canvas instanceof fabric.Canvas)) {
+  if (!canvas || !(canvas instanceof Canvas)) {
     console.error("Invalid canvas object. Aborting paste operation.");
     return;
   }
