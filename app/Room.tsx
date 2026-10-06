@@ -1,13 +1,16 @@
 "use client";
 
-import { LiveMap } from "@liveblocks/client";
-import { ClientSideSuspense } from "@liveblocks/react";
+import { LiveList, LiveMap } from "@liveblocks/client";
+import { ClientSideSuspense, LiveblocksProvider } from "@liveblocks/react";
 
 //import Loader from "@/components/Loader";
 import { RoomProvider } from "@/liveblocks.config";
+import Loader from "./components/Loader";
 
 const Room = ({ children }: { children: React.ReactNode }) => {
-  return (
+ return (
+
+    <LiveblocksProvider publicApiKey={process.env.NEXT_PUBLIC_LIVEBLOCKS_PUB_KEY!}>
     <RoomProvider
       id="fig-room"
       /**
@@ -23,18 +26,19 @@ const Room = ({ children }: { children: React.ReactNode }) => {
        * initialStorage: https://liveblocks.io/docs/api-reference/liveblocks-react#RoomProvider
        */
       initialStorage={{
-        /**
-         * We're using a LiveMap to store the canvas objects
-         *
-         * LiveMap: https://liveblocks.io/docs/api-reference/liveblocks-client#LiveMap
-         */
-        canvasObjects: new LiveMap(),
+        person: { name: "Marie", age: 30 },
+        canvasObjects: new LiveMap([]),
+        testObjects: new LiveList([
+          { objectId: "1", name: "test1", fill: "red" },
+          { objectId: "2", name: "test2", fill: "blue" },
+        ]),
       }}
     >
-      <ClientSideSuspense fallback={<div>Loading...</div>}>
+      <ClientSideSuspense fallback={<Loader />}>
         {() => children}
       </ClientSideSuspense>
     </RoomProvider>
+    </LiveblocksProvider>
   );
 }
 

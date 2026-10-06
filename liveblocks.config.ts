@@ -1,4 +1,4 @@
-import { LiveMap, createClient } from "@liveblocks/client";
+import { LiveList, LiveMap, LiveObject, createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
 
 const client = createClient({
@@ -6,6 +6,20 @@ const client = createClient({
   publicApiKey: process.env.NEXT_PUBLIC_LIVEBLOCKS_PUB_KEY!,
 });
 
+declare global {
+  interface Liveblocks {
+    // Storage type
+    Storage: {
+      person: LiveObject<{ name: string; age: number }>;
+      canvasObjects: LiveMap<string, any>;
+      testObjects: LiveList<any>;
+    };
+  }
+}
+
+export type { Liveblocks };
+
+/*
 // Presence represents the properties that exist on every user in the Room
 // and that will automatically be kept in sync. Accessible through the
 // `user.presence` property. Must be JSON-serializable.
@@ -21,7 +35,7 @@ type Presence = {
 type Storage = {
   // author: LiveObject<{ firstName: string, lastName: string }>,
   // ...
-  canvasObjects: LiveMap<string, any>;
+  //canvasObjects: LiveMap<string, any>;
 };
 
 // Optionally, UserMeta represents static/readonly metadata on each user, as
@@ -48,15 +62,19 @@ export type ThreadMetadata = {
   x: number;
   y: number;
 };
-
+*/
 export const {
   suspense: {
     RoomProvider,
-    useRoom,
     useMyPresence,
+    useOthers,
+    useStorage,
+    /*
+    useRoom,
+    
     useUpdateMyPresence,
     useSelf,
-    useOthers,
+   
     useOthersMapped,
     useOthersConnectionIds,
     useOther,
@@ -85,42 +103,15 @@ export const {
     useDeleteComment,
     useAddReaction,
     useRemoveReaction,
+    */
   },
 } = createRoomContext<Presence, Storage, UserMeta, RoomEvent, ThreadMetadata>(client, {
   async resolveUsers({ userIds }) {
-    // Used only for Comments. Return a list of user information retrieved
-    // from `userIds`. This info is used in comments, mentions etc.
-
-    // const usersData = await __fetchUsersFromDB__(userIds);
-    //
-    // return usersData.map((userData) => ({
-    //   name: userData.name,
-    //   avatar: userData.avatar.src,
-    // }));
-
     return [];
   },
   async resolveMentionSuggestions({ text, roomId }) {
-    // Used only for Comments. Return a list of userIds that match `text`.
-    // These userIds are used to create a mention list when typing in the
-    // composer.
-    //
-    // For example when you type "@jo", `text` will be `"jo"`, and
-    // you should to return an array with John and Joanna's userIds:
-    // ["john@example.com", "joanna@example.com"]
-
-    // const userIds = await __fetchAllUserIdsFromDB__(roomId);
-    //
-    // Return all userIds if no `text`
-    // if (!text) {
-    //   return userIds;
-    // }
-    //
-    // Otherwise, filter userIds for the search `text` and return
-    // return userIds.filter((userId) =>
-    //   userId.toLowerCase().includes(text.toLowerCase())
-    // );
-
     return [];
   },
 });
+
+

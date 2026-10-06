@@ -1,4 +1,4 @@
-import { Canvas } from 'fabric'
+import { Canvas, FabricObject, util } from 'fabric'
 import { v4 as uuid4 } from "uuid";
 
 import {
@@ -48,14 +48,11 @@ export const handleCanvasMouseDown = ({
 }: CanvasMouseDown) => {
   
   // get pointer coordinates
- 
-  console.log(canvas)
-  const pointer = {
+ const pointer = {
     x: options.e.clientX,
     y: options.e.clientY,
   }
  
-
   /**
    * get target object i.e., the object that is clicked
    * findtarget() returns the object that is clicked
@@ -352,20 +349,45 @@ export const renderCanvas = ({
   canvasObjects,
   activeObjectRef,
 }: RenderCanvas) => {
-  // clear canvas
-  fabricRef.current?.clear();
+    // clear canvas
+    fabricRef.current?.clear();
+    let arr: FabricObject[] = [];
 
+    for (const objectId in canvasObjects) {
+      console.log("OBJECT", objectId, "OBJECT SHAPE", canvasObjects[objectId])
+      arr.push({
+        type: canvasObjects[objectId].type,
+        width: canvasObjects[objectId].width,
+        height: canvasObjects[objectId].height,
+        fill: canvasObjects[objectId].fill,
+        top: canvasObjects[objectId].top,
+        left: canvasObjects[objectId].left,
+        //coordinates: canvasObjects[objectId].coordinates,
+        objectId: objectId,
+      });
+    }
+  
+
+    util.enlivenObjects<FabricObject[]>(arr).then((objects) => {
+      objects.forEach((enlivenedObj) => {
+          // if element is active, keep it in active state so that it can be edited further
+          if (activeObjectRef.current?.objectId === enlivenedObj.objectId) {
+            fabricRef.current?.setActiveObject(enlivenedObj);
+          }
+
+          // add object to canvas
+          fabricRef.current?.add(enlivenedObj);
+        });
+      
+      fabricRef.current?.renderAll();
+    });
+
+    /*
+
+  
   // render all objects on canvas
-  Array.from(canvasObjects, ([objectId, objectData]) => {
-    /**
-     * enlivenObjects() is used to render objects on canvas.
-     * It takes two arguments:
-     * 1. objectData: object data to render on canvas
-     * 2. callback: callback function to execute after rendering objects
-     * on canvas
-     *
-     * enlivenObjects: http://fabricjs.com/docs/fabric.util.html#.enlivenObjectEnlivables
-     */
+  Array.from(canvasShapes, ([objectId, objectData]) => {
+   
     fabric.util.enlivenObjects(
       [objectData],
       (enlivenedObjects: fabric.Object[]) => {
@@ -379,18 +401,17 @@ export const renderCanvas = ({
           fabricRef.current?.add(enlivenedObj);
         });
       },
-      /**
-       * specify namespace of the object for fabric to render it on canvas
-       * A namespace is a string that is used to identify the type of
-       * object.
-       *
-       * Fabric Namespace: http://fabricjs.com/docs/fabric.html
-       */
+      
       "fabric"
     );
   });
+  
 
   fabricRef.current?.renderAll();
+  */
+
+  
+  
 };
 
 // resize canvas dimensions on window resize
