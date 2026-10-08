@@ -7,12 +7,14 @@ import Navbar from "./components/Navbar";
 import LeftSidebar from "./components/LeftSidebar";
 import RightSidebar from "./components/RightSidebar";
 import { useRef, useEffect, useState } from "react";
-import { handleCanvasMouseDown, handleResize, initializeFabric, handleCanvaseMouseMove, handleCanvasMouseUp, renderCanvas } from "@/lib/canvas";
+import { handleCanvasMouseDown, handleResize, initializeFabric, handleCanvaseMouseMove, handleCanvasMouseUp, renderCanvas, handleCanvasObjectModified } from "@/lib/canvas";
 import { Canvas, Object, util, Rect } from 'fabric'
 import { ActiveElement } from "@/types/type";
 import { useMutation } from "@liveblocks/react";
 import { useStorage } from "@/liveblocks.config";
 import { LiveMap } from "@liveblocks/client";
+import { defaultNavElement } from "@/constants";
+import { handleDelete } from "@/lib/key-events";
 
 
 
@@ -49,10 +51,41 @@ export default function Home() {
     icon: "",
   })
   
+  const deleteAllShapes = useMutation(({storage}) => {
+    const canvasObjects = storage.get('canvasObjects');
+    if(!canvasObjects || canvasObjects.size === 0) return;
+
+    for (const [key, value] of canvasObjects.entries()) {
+      canvasObjects.delete(key);
+    }
+
+    return canvasObjects.size === 0;
+  }, []) 
+
+
+ const deleteShapeFromStorage = useMutation(({storage}, objectId) => {
+   const canvasObjects = storage.get('canvasObjects');
+   canvasObjects.delete(objectId);
+   setActiveElement(defaultNavElement);
+ }, [])
+
   const handleActiveElement = (element: ActiveElement) => {
     setActiveElement(element);
     selectedShapeRef.current = element?.value;
-  }
+
+    switch (element.value) {
+      case 'reset':
+        deleteAllShapes();
+        fabricRef.current?.clear();
+        setActiveElement(defaultNavElement);
+        break;
+      case 'delete':
+        handleDelete(fabricRef.current as any, deleteShapeFromStorage);
+      default:
+        break;
+    }
+  
+    }
 
 
   //init fabric
@@ -96,6 +129,12 @@ export default function Home() {
       });
    });
 
+   canvas.on("object:modified", (options) => {
+     handleCanvasObjectModified({
+       options,
+       syncShapeInStorage,
+    });
+  });
 
    window.addEventListener("resize", () => {
       handleResize({fabricRef});
@@ -120,7 +159,8 @@ export default function Home() {
     <main className="h-screen overflow-hidden">
       <Navbar activeElement={activeElement} handleActiveElement={handleActiveElement} />
       <section className="flex h-full flex-row">
-        <LeftSidebar />
+        {/* TODO: add allShapes prop */}
+        <LeftSidebar allShapes={[]} />
         <Live canvasRef={canvasRef} />
         <RightSidebar />
       </section>
