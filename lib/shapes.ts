@@ -1,4 +1,4 @@
-import { Canvas, Circle, IText, Line, Rect, Triangle } from 'fabric';
+import * as fabric from 'fabric';
 import { v4 as uuidv4 } from "uuid";
 
 import {
@@ -9,31 +9,32 @@ import {
 } from "@/types/type";
 
 export const createRectangle = (pointer: PointerEvent) => {
-  const rect = new Rect({
+  const rect = new fabric.Rect({
     left: pointer.x,
     top: pointer.y,
     width: 100,
     height: 100,
     fill: "#aabbcc",
     objectId: uuidv4(),
-  } as CustomFabricObject<Rect>);
+  } as CustomFabricObject<fabric.Rect>);
 
   return rect;
 };
 
 export const createTriangle = (pointer: PointerEvent) => {
-  return new Triangle({
+  return new fabric.Triangle({
     left: pointer.x,
     top: pointer.y,
     width: 100,
     height: 100,
     fill: "#aabbcc",
     objectId: uuidv4(),
-  } as CustomFabricObject<Triangle>);
+  } as CustomFabricObject<fabric.Triangle>);
 };
 
+
 export const createCircle = (pointer: PointerEvent) => {
-  return new Circle({
+  return new fabric.Circle({
     left: pointer.x,
     top: pointer.y,
     radius: 100,
@@ -43,27 +44,29 @@ export const createCircle = (pointer: PointerEvent) => {
 };
 
 export const createLine = (pointer: PointerEvent) => {
-  return new Line(
+  return new fabric.Line(
     [pointer.x, pointer.y, pointer.x + 100, pointer.y + 100],
     {
       stroke: "#aabbcc",
       strokeWidth: 2,
       objectId: uuidv4(),
-    } as CustomFabricObject<Line>
+    } as CustomFabricObject<fabric.Line>
   );
 };
 
 export const createText = (pointer: PointerEvent, text: string) => {
-  return new IText(text, {
+  return new fabric.Textbox(text, {
     left: pointer.x,
     top: pointer.y,
     fill: "#aabbcc",
     fontFamily: "Helvetica",
     fontSize: 36,
     fontWeight: "400",
-    objectId: uuidv4()
-  } as fabric.ITextOptions);
+    objectId: uuidv4(),
+    editable: true,
+  } as fabric.Textbox);
 };
+
 
 export const createSpecificShape = (
   shapeType: string,
@@ -96,26 +99,30 @@ export const handleImageUpload = ({
   shapeRef,
   syncShapeInStorage,
 }: ImageUpload) => {
-  const reader = new FileReader();
+  
+  
+  if(file) {
+    const reader = new FileReader();
+    reader.onload = readSuccess;                                            
+    function readSuccess(evt: any) { 
+      //we need to create the image from the dataURL
+      const img =fabric.FabricImage.fromURL(evt.target.result)
 
-  reader.onload = () => {
-    fabric.Image.fromURL(reader.result as string, (img) => {
-      img.scaleToWidth(200);
-      img.scaleToHeight(200);
-
-      canvas.current.add(img);
-
-      // @ts-ignore
-      img.objectId = uuidv4();
-
-      shapeRef.current = img;
-
-      syncShapeInStorage(img);
-      canvas.current.requestRenderAll();
-    });
-  };
-
-  reader.readAsDataURL(file);
+      img.then((img) => {
+        img.scaleToWidth(200);
+        img.scaleToHeight(200);
+        canvas.current.add(img);
+        // @ts-ignore
+        img.objectId = uuidv4();
+        shapeRef.current = img;
+        syncShapeInStorage(img);
+        canvas.current.requestRenderAll();
+      });
+    };
+    //reader.readAsText(file);  
+    reader.readAsDataURL(file);    
+  }
+  
 };
 
 export const createShape = (
@@ -123,12 +130,14 @@ export const createShape = (
   pointer: PointerEvent,
   shapeType: string
 ) => {
+
   if (shapeType === "freeform") {
     canvas.isDrawingMode = true;
     return null;
   }
 
   return createSpecificShape(shapeType, pointer);
+
 };
 
 export const modifyShape = ({

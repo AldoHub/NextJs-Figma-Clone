@@ -84,6 +84,7 @@ export const handleCanvasMouseDown = ({
 
     // set active object to target
     canvas.setActiveObject(target);
+    //console.log("TARGET", target);
 
     /**
      * setCoords() is used to update the controls of the object
@@ -92,7 +93,9 @@ export const handleCanvasMouseDown = ({
     target.setCoords();
   } else {
     isDrawing.current = true;
-
+    
+    //console.log("SHAPE", shapeRef.current);
+    
     // create custom fabric object/shape and set it to shapeRef
     shapeRef.current = createSpecificShape(
       selectedShapeRef.current,
@@ -143,6 +146,7 @@ export const handleCanvaseMouseMove = ({
       shapeRef.current.set({
         radius: Math.abs(pointer.x - (shapeRef.current?.left || 0)) / 2,
       });
+      
       break;
 
     case "triangle":
@@ -171,12 +175,14 @@ export const handleCanvaseMouseMove = ({
 
   // render objects on canvas
   // renderAll: http://fabricjs.com/docs/fabric.Canvas.html#renderAll
-  canvas.renderAll();
+    canvas.renderAll();
 
+    
   // sync shape in storage
   if (shapeRef.current?.objectId) {
     syncShapeInStorage(shapeRef.current);
   }
+    
 };
 
 // handle mouse up event on canvas to stop drawing shapes
@@ -189,6 +195,8 @@ export const handleCanvasMouseUp = ({
   syncShapeInStorage,
   setActiveElement,
 }: CanvasMouseUp) => {
+
+  
   isDrawing.current = false;
   if (selectedShapeRef.current === "freeform") return;
 
@@ -206,6 +214,7 @@ export const handleCanvasMouseUp = ({
       setActiveElement(defaultNavElement);
     }, 700);
   }
+    
 };
 
 // update shape in storage when object is modified
@@ -349,22 +358,14 @@ export const renderCanvas = ({
   canvasObjects,
   activeObjectRef,
 }: RenderCanvas) => {
+  
     // clear canvas
     fabricRef.current?.clear();
-    let arr: FabricObject[] = [];
+    let arr: any[] = [];
 
     for (const objectId in canvasObjects) {
-      console.log("OBJECT", objectId, "OBJECT SHAPE", canvasObjects[objectId])
-      arr.push({
-        type: canvasObjects[objectId].type,
-        width: canvasObjects[objectId].width,
-        height: canvasObjects[objectId].height,
-        fill: canvasObjects[objectId].fill,
-        top: canvasObjects[objectId].top,
-        left: canvasObjects[objectId].left,
-        //coordinates: canvasObjects[objectId].coordinates,
-        objectId: objectId,
-      });
+      //console.log("OBJECT", objectId, "OBJECT SHAPE", canvasObjects[objectId])
+     arr.push(canvasObjects[objectId]);
     }
   
 
@@ -381,6 +382,9 @@ export const renderCanvas = ({
       
       fabricRef.current?.renderAll();
     });
+
+
+
 
     /*
 
