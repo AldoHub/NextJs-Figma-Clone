@@ -109,11 +109,12 @@ export const handleImageUpload = ({
       const img =fabric.FabricImage.fromURL(evt.target.result)
 
       img.then((img) => {
-        img.scaleToWidth(200);
-        img.scaleToHeight(200);
+        img.scaleToWidth(300);
+        img.scaleToHeight(300);
         canvas.current.add(img);
         // @ts-ignore
         img.objectId = uuidv4();
+        
         shapeRef.current = img;
         syncShapeInStorage(img);
         canvas.current.requestRenderAll();
@@ -164,7 +165,10 @@ export const modifyShape = ({
   }
 
   // set selectedElement to activeObjectRef
-  activeObjectRef.current = selectedElement;
+  if(activeObjectRef){
+    activeObjectRef.current = selectedElement;
+  }
+ 
 
   syncShapeInStorage(selectedElement);
 };

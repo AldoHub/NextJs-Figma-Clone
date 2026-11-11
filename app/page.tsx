@@ -7,9 +7,9 @@ import Navbar from "./components/Navbar";
 import LeftSidebar from "./components/LeftSidebar";
 import RightSidebar from "./components/RightSidebar";
 import { useRef, useEffect, useState } from "react";
-import { handleCanvasMouseDown, handleResize, initializeFabric, handleCanvaseMouseMove, handleCanvasMouseUp, renderCanvas, handleCanvasObjectModified } from "@/lib/canvas";
+import { handleCanvasMouseDown, handleResize, initializeFabric, handleCanvaseMouseMove, handleCanvasMouseUp, renderCanvas, handleCanvasObjectModified, handleCanvasSelectionCreated, handleCanvasObjectScaling } from "@/lib/canvas";
 import { Canvas, Object, util, Rect } from 'fabric'
-import { ActiveElement } from "@/types/type";
+import { ActiveElement, Attributes } from "@/types/type";
 import { useMutation, useRedo, useUndo } from "@liveblocks/react";
 import { useStorage } from "@/liveblocks.config";
 import { LiveMap } from "@liveblocks/client";
@@ -33,6 +33,17 @@ export default function Home() {
   const undo = useUndo();
   const redo = useRedo();
 
+  const isEditingRef = useRef(false);
+  const [elementAttributes, setElementAttributes] = useState<Attributes>({
+    width: "",
+    height: "",
+    fontSize: "",
+    fontFamily: "",
+    fontWeight: "",
+    fill: "#aabbcc",
+    stroke: "#aabbcc"
+
+  })
 
   const syncShapeInStorage = useMutation(({storage}, object) => {
 
@@ -154,6 +165,24 @@ export default function Home() {
     });
   });
 
+  canvas.on("selection:created", (options) => {
+    handleCanvasSelectionCreated({
+      options, 
+      isEditingRef,
+      setElementAttributes
+    })
+  });
+
+
+canvas.on("object:scaling", (options) => {
+    handleCanvasObjectScaling({
+      options, 
+      setElementAttributes
+    })
+  });
+
+
+
    window.addEventListener("resize", () => {
       handleResize({fabricRef});
    });
@@ -198,7 +227,8 @@ export default function Home() {
         {/* TODO: add allShapes prop */}
         <LeftSidebar allShapes={canvasObjects} />
         <Live canvasRef={canvasRef} />
-        <RightSidebar />
+        <RightSidebar elementAttributes={elementAttributes} setElementAttributes={setElementAttributes} fabricRef={fabricRef} isEditingRef={isEditingRef} actioveObjectRef={activeObjectRef} 
+        syncShapeInStorage={syncShapeInStorage}/>
       </section>
 
       
@@ -208,4 +238,4 @@ export default function Home() {
 
 
 //https://jsmastery.com/video-kit/066c3e16-084c-4d70-898a-e5d7086f3d13
-// 2:09:00 https://www.youtube.com/watch?v=oKIThIihv60&t=75s
+// 2:49:20 https://www.youtube.com/watch?v=oKIThIihv60&t=75s
