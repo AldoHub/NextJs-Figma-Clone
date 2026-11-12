@@ -7,7 +7,7 @@ import Navbar from "./components/Navbar";
 import LeftSidebar from "./components/LeftSidebar";
 import RightSidebar from "./components/RightSidebar";
 import { useRef, useEffect, useState } from "react";
-import { handleCanvasMouseDown, handleResize, initializeFabric, handleCanvaseMouseMove, handleCanvasMouseUp, renderCanvas, handleCanvasObjectModified, handleCanvasSelectionCreated, handleCanvasObjectScaling } from "@/lib/canvas";
+import { handleCanvasMouseDown, handleResize, initializeFabric, handleCanvaseMouseMove, handleCanvasMouseUp, renderCanvas, handleCanvasObjectModified, handleCanvasSelectionCreated, handleCanvasObjectScaling, handlePathCreated } from "@/lib/canvas";
 import { Canvas, Object, util, Rect } from 'fabric'
 import { ActiveElement, Attributes } from "@/types/type";
 import { useMutation, useRedo, useUndo } from "@liveblocks/react";
@@ -174,12 +174,19 @@ export default function Home() {
   });
 
 
-canvas.on("object:scaling", (options) => {
-    handleCanvasObjectScaling({
-      options, 
-      setElementAttributes
-    })
-  });
+  canvas.on("object:scaling", (options) => {
+      handleCanvasObjectScaling({
+        options, 
+        setElementAttributes
+      })
+    });
+
+    canvas.on("path:created", (options) => {
+     handlePathCreated({
+      options,
+      syncShapeInStorage,
+     })
+    });
 
 
 
@@ -226,7 +233,7 @@ canvas.on("object:scaling", (options) => {
       <section className="flex h-full flex-row">
         {/* TODO: add allShapes prop */}
         <LeftSidebar allShapes={canvasObjects} />
-        <Live canvasRef={canvasRef} />
+        <Live canvasRef={canvasRef} undo={undo} redo={redo}/>
         <RightSidebar elementAttributes={elementAttributes} setElementAttributes={setElementAttributes} fabricRef={fabricRef} isEditingRef={isEditingRef} actioveObjectRef={activeObjectRef} 
         syncShapeInStorage={syncShapeInStorage}/>
       </section>

@@ -1,8 +1,8 @@
 "use client";
 
-import { ClientSideSuspense } from "@liveblocks/react";
+import { ClientSideSuspense } from "@liveblocks/react/suspense";
 
-import { CommentsOverlay } from "@/components/comments/CommentsOverlay";
+import { CommentsOverlay } from "./CommentsOverlay";
 
 export const Comments = () => (
   <ClientSideSuspense fallback={null}>

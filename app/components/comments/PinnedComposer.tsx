@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Composer, ComposerProps } from "@liveblocks/react-comments";
+import { Composer, ComposerProps } from "@liveblocks/react-ui";
 
 type Props = {
   onComposerSubmit: ComposerProps["onComposerSubmit"];
@@ -27,6 +27,7 @@ const PinnedComposer = ({ onComposerSubmit, ...props }: Props) => {
          *
          * Composer: https://liveblocks.io/docs/api-reference/liveblocks-react-comments#Composer
          */}
+          
         <Composer
           onComposerSubmit={onComposerSubmit}
           autoFocus={true}
@@ -34,6 +35,7 @@ const PinnedComposer = ({ onComposerSubmit, ...props }: Props) => {
             e.stopPropagation()
           }}
         />
+        *
       </div>
     </div>
   );

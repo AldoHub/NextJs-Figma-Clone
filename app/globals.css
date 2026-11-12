@@ -182,3 +182,37 @@ nav, .isolate.z-50.outline-none{
 canvas {
  
 }
+.comments-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 4rem 1rem;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 680px;
+  /*
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  */
+}
+
+.comments-box  form {
+  width: 100%;
+}
+
+.thread,
+.composer {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 4%),
+    0 2px 6px rgb(0 0 0 / 4%),
+    0 8px 26px rgb(0 0 0 / 6%);
+}
+
+.upper-canvas {
+  border: 1px solid #353535 !important;
+}

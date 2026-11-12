@@ -3,35 +3,26 @@
 import { useCallback, useRef } from "react";
 import { ThreadData } from "@liveblocks/client";
 
-import { ThreadMetadata, useEditThreadMetadata, useThreads, useUser } from "@/liveblocks.config";
+import { Composer, Thread } from "@liveblocks/react-ui";
+import { useEditThreadMetadata, useThreads, useUser } from "@liveblocks/react/suspense";
 import { useMaxZIndex } from "@/lib/useMaxZIndex";
 
 import { PinnedThread } from "./PinnedThread";
 
 type OverlayThreadProps = {
-  thread: ThreadData<ThreadMetadata>;
+  thread: ThreadData<any>;
   maxZIndex: number;
 };
 
 export const CommentsOverlay = () => {
-  /**
-   * We're using the useThreads hook to get the list of threads
-   * in the room.
-   *
-   * useThreads: https://liveblocks.io/docs/api-reference/liveblocks-react#useThreads
-   */
-  const { threads } = useThreads();
-
-  // get the max z-index of a thread
-  const maxZIndex = useMaxZIndex();
+ const { threads } = useThreads();
 
   return (
-    <div>
-      {threads
-        .filter((thread) => !thread.metadata.resolved)
-        .map((thread) => (
-          <OverlayThread key={thread.id} thread={thread} maxZIndex={maxZIndex} />
-        ))}
+    <div className='comments-box'>
+      {threads.map((thread) => (
+        <OverlayThread key={thread.id} thread={thread} className="thread" />
+      ))}
+      
     </div>
   );
 };
@@ -50,7 +41,9 @@ const OverlayThread = ({ thread, maxZIndex }: OverlayThreadProps) => {
    *
    * useUser: https://liveblocks.io/docs/api-reference/liveblocks-react#useUser
    */
-  const { isLoading } = useUser(thread.comments[0].userId);
+
+  //console.log("THREAD: ", thread)
+  //const { isLoading } = useUser(thread.comments[0].userId);
 
   // We're using a ref to get the thread element to position it
   const threadRef = useRef<HTMLDivElement>(null);
@@ -69,11 +62,11 @@ const OverlayThread = ({ thread, maxZIndex }: OverlayThreadProps) => {
       },
     });
   }, [thread, editThreadMetadata, maxZIndex]);
-
+/*
   if (isLoading) {
-    return null;
+   // return null;
   }
-
+*/
   return (
     <div
       ref={threadRef}

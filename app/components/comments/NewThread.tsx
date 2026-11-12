@@ -12,7 +12,7 @@ import { Slot } from "@radix-ui/react-slot";
 import * as Portal from "@radix-ui/react-portal";
 import { ComposerSubmitComment } from "@liveblocks/react-comments/primitives";
 
-import { useCreateThread } from "@/liveblocks.config";
+import { useCreateThread } from "@liveblocks/react/suspense";
 import { useMaxZIndex } from "@/lib/useMaxZIndex";
 
 import PinnedComposer from "./PinnedComposer";

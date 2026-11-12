@@ -20,7 +20,7 @@ const CursorChat = ({cursor, cursorState, setCursorState, updateMyPresence}: Cur
     }
   
     return (
-    <div className="absolute top-0 left-0"
+    <div className="cursorChat absolute top-0 left-0"
     style={{
       transform: `translate(${cursor.x}px, ${cursor.y}px)`,
     }}>

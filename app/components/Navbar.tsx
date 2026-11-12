@@ -45,7 +45,16 @@ const Navbar = ({ activeElement, imageInputRef, handleImageUpload, handleActiveE
              
             ) : item?.value === "comments" ? (
               // If value is comments, trigger the NewThread component
-              <span className=""></span>
+              <NewThread>
+                 <Button className="relative w-5 h-5 object-contain">
+                  <Image
+                  src={item.icon}
+                  alt={item.name}
+                  fill
+                  className={isActive(item.value) ? "invert" : ""}
+                 />
+                 </Button>
+              </NewThread>
             ) : (
              
               <Button className="relative w-5 h-5 object-contain">

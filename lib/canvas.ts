@@ -1,6 +1,6 @@
 import { Canvas, FabricObject, util } from 'fabric'
 import { v4 as uuid4 } from "uuid";
-
+import { PencilBrush } from 'fabric'; // or fabric.PencilBrush in CDN/v6 builds
 import {
   CanvasMouseDown,
   CanvasMouseMove,
@@ -66,9 +66,11 @@ export const handleCanvasMouseDown = ({
 
   // if selected shape is freeform, set drawing mode to true and return
   if (selectedShapeRef.current === "freeform") {
+    canvas.freeDrawingBrush = new PencilBrush(canvas);
+    canvas.freeDrawingBrush.color = '#000000';
+    canvas.freeDrawingBrush.width = 5;
     isDrawing.current = true;
     canvas.isDrawingMode = true;
-    canvas.freeDrawingBrush.width = 5;
     return;
   }
 
